@@ -9,3 +9,4 @@ ssdeep
 capa
 vt-py
 scandir
+requests

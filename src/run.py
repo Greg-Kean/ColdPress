@@ -33,6 +33,7 @@ from utils import *
 from modules import loader as module_loader
 from modules.modules import *
 
+from modules.url import url_module as url_mod #To be cleaned up
 import tempfile
 import shutil
 from shutil import copyfile
@@ -819,6 +820,7 @@ def usage():
     eprint("-d <path>\toutput directory to store analysis results and artifacts")
     eprint("-D\tdebug mode (disable ctrl-C handler, extra output...)")
     eprint("-s <path>\tmalware samples directory")
+    eprint("-u <URL>\tURL scanning module")
 
 
 def list_modules():
@@ -857,6 +859,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', help="-d <path>\toutput directory to store analysis results and artifacts")
     parser.add_argument('-D', action='store_true', help="-D\tdebug mode (disable ctrl-C handler, extra output...)")
     parser.add_argument('-s', help="-s <path>\tmalware samples directory", default=False)
+    parser.add_argument('-u', help="-u <URL>\tURL scanning module (Incompatible with other modes)")
     
 
     args = parser.parse_args()
@@ -893,6 +896,13 @@ if __name__ == "__main__":
         OUTPUT_DIR = os.path.realpath(args.d)
     if args.s:
         path = os.path.realpath(args.s)
+    if args.u:
+        modules_mode = 'include'
+        include_list = 'url'
+        urlIn = args.u
+        url_output = url_mod.tempRun(urlIn)
+        eprint(url_output)
+        exit(0)
     
     DEBUG = args.D
     FAST_MODE = args.F
