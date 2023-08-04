@@ -33,7 +33,12 @@ from utils import *
 from modules import loader as module_loader
 from modules.modules import *
 
+'''
+Clean this up
+'''
 from modules.url import url_module as url_mod #To be cleaned up
+from modules.kqloutput import kqloutput_module as kql_mod #To be cleaned up
+
 import tempfile
 import shutil
 from shutil import copyfile
@@ -821,6 +826,7 @@ def usage():
     eprint("-D\tdebug mode (disable ctrl-C handler, extra output...)")
     eprint("-s <path>\tmalware samples directory")
     eprint("-u <URL>\tURL scanning module")
+    eprint("-k\tOutput a KQL query to find the other instances of the analyzed sample")
 
 
 def list_modules():
@@ -860,6 +866,7 @@ if __name__ == "__main__":
     parser.add_argument('-D', action='store_true', help="-D\tdebug mode (disable ctrl-C handler, extra output...)")
     parser.add_argument('-s', help="-s <path>\tmalware samples directory", default=False)
     parser.add_argument('-u', help="-u <URL>\tURL scanning module (Incompatible with other modes)")
+    parser.add_argument('-k', action='store_true', help="-k\tOutput a KQL query to find the other instances of the analyzed sample")
     
 
     args = parser.parse_args()
@@ -896,6 +903,9 @@ if __name__ == "__main__":
         OUTPUT_DIR = os.path.realpath(args.d)
     if args.s:
         path = os.path.realpath(args.s)
+    '''
+    Refactor the following
+    '''
     if args.u:
         modules_mode = 'include'
         include_list = 'url'
@@ -903,6 +913,8 @@ if __name__ == "__main__":
         url_output = url_mod.tempRun(urlIn)
         eprint(url_output)
         exit(0)
+
+
     
     DEBUG = args.D
     FAST_MODE = args.F
@@ -1106,6 +1118,11 @@ if __name__ == "__main__":
             with open(os.path.join(OUTPUT_DIR, modname + '.' + mod.get_extension()), 'wb') as f:
                 f.write(modOutput.encode('utf-8'))
             eprint(f"running output module {modname}", color=C_CYAN)
+
+    if args.k: #Refactor the following
+        tempOut = kql_mod.tempRun(OUTPUT_DIR)
+        eprint(tempOut)
+
 
     time_elasped = time.time() - main_start
     pe_s = time_elasped / pe_analyzed
